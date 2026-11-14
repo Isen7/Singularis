@@ -1,18 +1,18 @@
 const targets = {
   wise: {
-    name: 'WISE 0855', ra: 133.795129, dec: -7.245147, detector: 'SPHEREx D2',
+    name: 'WISE 0855', ra: 133.795129, dec: -7.245147, detector: 'SPHEREx D2', nativePixels: [59, 59],
     note: 'These two frames come from real SPHEREx DR1 data, aligned on the sky and shown with the same brightness scale. They demonstrate a reproducible time-comparison workflow; visual inspection alone cannot confirm motion or brightness change for WISE 0855.',
     observations: [
-      { date: '2025-05-06 10:41 UTC', shortDate: '2025-05-06', timeline: '2025 MAY', id: '2025W19_1B_0231_1', wavelength: '1.280 µm', image: './wise0855-may.png', source: 'https://irsa.ipac.caltech.edu/ibe/cutout?ra=133.795129&dec=-7.245147&size=0.1&path=spherex/dr1/level2/2025W19_1B/l2b-v27-2026-197/2/level2_2025W19_1B_0231_1D2_spx_l2b-v27-2026-197.fits' },
-      { date: '2025-11-07 18:49 UTC', shortDate: '2025-11-07', timeline: '2025 NOV', id: '2025W45_2A_0278_2', wavelength: '1.285 µm', image: './wise0855-nov.png', source: 'https://irsa.ipac.caltech.edu/ibe/cutout?ra=133.795129&dec=-7.245147&size=0.1&path=spherex/dr1/level2/2025W45_2A/l2b-v27-2026-247/2/level2_2025W45_2A_0278_2D2_spx_l2b-v27-2026-247.fits' },
+      { date: '2025-05-06 10:41 UTC', shortDate: '2025-05-06', timeline: '2025 MAY', id: '2025W19_1B_0231_1', wavelength: '1.280 µm', image: './wise0855-may.png?v=2', source: 'https://irsa.ipac.caltech.edu/ibe/cutout?ra=133.795129&dec=-7.245147&size=0.1&path=spherex/dr1/level2/2025W19_1B/l2b-v27-2026-197/2/level2_2025W19_1B_0231_1D2_spx_l2b-v27-2026-197.fits' },
+      { date: '2025-11-07 18:49 UTC', shortDate: '2025-11-07', timeline: '2025 NOV', id: '2025W45_2A_0278_2', wavelength: '1.285 µm', image: './wise0855-nov.png?v=2', source: 'https://irsa.ipac.caltech.edu/ibe/cutout?ra=133.795129&dec=-7.245147&size=0.1&path=spherex/dr1/level2/2025W45_2A/l2b-v27-2026-247/2/level2_2025W45_2A_0278_2D2_spx_l2b-v27-2026-247.fits' },
     ],
   },
   rwaur: {
-    name: 'RW Aurigae', ra: 76.95625, dec: 30.401417, detector: 'SPHEREx D1',
+    name: 'RW Aurigae', ra: 76.95625, dec: 30.401417, detector: 'SPHEREx D1', nativePixels: [58, 59],
     note: 'These two frames come from real SPHEREx DR1 data, with central wavelengths near 0.85865 and 0.85822 µm at the target. The images are sky-aligned and use the same brightness scale. The central source is visible, but quality flags, error propagation, and photometry have not been applied, so brightness change cannot be confirmed.',
     observations: [
-      { date: '2025-09-03 17:22 UTC', shortDate: '2025-09-03', timeline: '2025 SEP', id: '2025W36_1A_0606_1', wavelength: '0.859 µm', image: './rwaur-sep.png', source: 'https://irsa.ipac.caltech.edu/ibe/cutout?ra=76.95625&dec=30.401417&size=0.1&path=spherex/dr1/level2/2025W36_1A/l2b-v27-2026-232/1/level2_2025W36_1A_0606_1D1_spx_l2b-v27-2026-232.fits' },
-      { date: '2026-03-04 07:54 UTC', shortDate: '2026-03-04', timeline: '2026 MAR', id: '2026W10_1A_0445_1', wavelength: '0.858 µm', image: './rwaur-mar.png', source: 'https://irsa.ipac.caltech.edu/ibe/cutout?ra=76.95625&dec=30.401417&size=0.1&path=spherex/dr1/level2/2026W10_1A/l2b-v27-2026-229/1/level2_2026W10_1A_0445_1D1_spx_l2b-v27-2026-229.fits' },
+      { date: '2025-09-03 17:22 UTC', shortDate: '2025-09-03', timeline: '2025 SEP', id: '2025W36_1A_0606_1', wavelength: '0.859 µm', image: './rwaur-sep.png?v=2', source: 'https://irsa.ipac.caltech.edu/ibe/cutout?ra=76.95625&dec=30.401417&size=0.1&path=spherex/dr1/level2/2025W36_1A/l2b-v27-2026-232/1/level2_2025W36_1A_0606_1D1_spx_l2b-v27-2026-232.fits' },
+      { date: '2026-03-04 07:54 UTC', shortDate: '2026-03-04', timeline: '2026 MAR', id: '2026W10_1A_0445_1', wavelength: '0.858 µm', image: './rwaur-mar.png?v=2', source: 'https://irsa.ipac.caltech.edu/ibe/cutout?ra=76.95625&dec=30.401417&size=0.1&path=spherex/dr1/level2/2026W10_1A/l2b-v27-2026-229/1/level2_2026W10_1A_0445_1D1_spx_l2b-v27-2026-229.fits' },
     ],
   },
 };
@@ -70,6 +70,7 @@ function selectTarget(key) {
   $('dec').value = target.dec;
   $('target-name').textContent = `${target.name} field`;
   $('detector-name').textContent = target.detector;
+  $('resolution-note').textContent = `Native SPHEREx cutout: ${target.nativePixels[0]} × ${target.nativePixels[1]} pixels, enlarged for viewing. Smoothing does not add detail.`;
   $('dataset-name').textContent = target.dataset || 'DR1';
   $('stage-title').textContent = `${target.name} · Two observations`;
   $('interpretation-text').textContent = target.note;
@@ -138,7 +139,7 @@ $('coordinate-form').addEventListener('submit', async (event) => {
     if (!response.ok) throw new Error(result.error || 'Archive search failed.');
     const name = `${ra.toFixed(5)}°, ${dec.toFixed(5)}°`;
     targets.live = {
-      name, ra, dec, detector: result.detector.replace('-', ' '),
+      name, ra, dec, detector: result.detector.replace('-', ' '), nativePixels: result.native_pixels,
       dataset: result.collection.replace('spherex_', '').toUpperCase(),
       note: result.warning,
       observations: result.frames.map((item, index) => ({

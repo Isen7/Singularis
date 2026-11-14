@@ -6,9 +6,9 @@
   <meta name="theme-color" content="#07111e">
   <meta name="description" content="Singularis — Beyond Limits, Beyond the Known. Explore the changing sky with real SPHEREx observations.">
   <title>Singularis · SPHEREx Sky Change Viewer</title>
-  <link rel="stylesheet" href="./styles.css?v=3">
+  <link rel="stylesheet" href="./styles.css?v=4">
   <script src="./config.js?v=2" defer></script>
-  <script src="./app.js?v=4" defer></script>
+  <script src="./app.js?v=5" defer></script>
 </head>
 <body>
   <header class="topbar">
@@ -50,14 +50,15 @@
           <div class="stage-top"><div><span class="panel-kicker">TIME SERIES</span><h3 id="stage-title">WISE 0855 · Two observations</h3></div><div class="mode-switch" role="group" aria-label="View mode"><button id="mode-play" class="mode active" type="button" aria-pressed="true">Frame by frame</button><button id="mode-compare" class="mode" type="button" aria-pressed="false">Compare</button></div></div>
           <div class="stage-wrap">
             <div id="frame-stage" class="image-stage" aria-label="SPHEREx sky field image">
-              <img id="frame-image" src="./wise0855-may.png" alt="WISE 0855 sky field observation from 2025-05-06">
+              <img id="frame-image" src="./wise0855-may.png?v=2" alt="WISE 0855 sky field observation from 2025-05-06">
             </div>
             <div id="compare-stage" class="image-stage comparison" hidden aria-label="Sliding comparison of two observations">
-              <img id="compare-later-image" src="./wise0855-nov.png" alt="" aria-hidden="true">
-              <div id="top-layer" class="top-layer"><img id="compare-earlier-image" src="./wise0855-may.png" alt="" aria-hidden="true"></div>
+              <img id="compare-later-image" src="./wise0855-nov.png?v=2" alt="" aria-hidden="true">
+              <div id="top-layer" class="top-layer"><img id="compare-earlier-image" src="./wise0855-may.png?v=2" alt="" aria-hidden="true"></div>
               <div id="comparison-line" class="comparison-line"><span>↔</span></div>
             </div>
           </div>
+          <p id="resolution-note" class="resolution-note">Native SPHEREx cutout: 59 × 59 pixels, enlarged for viewing. Smoothing does not add detail.</p>
           <div id="player-controls" class="player-controls">
             <button id="prev" class="icon-btn" type="button" aria-label="Previous frame">←</button>
             <button id="play" class="play-btn" type="button" aria-label="Play">▶ <span>Play</span></button>
