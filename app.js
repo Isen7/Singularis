@@ -140,7 +140,7 @@ $('coordinate-form').addEventListener('submit', async (event) => {
     const name = `${ra.toFixed(5)}°, ${dec.toFixed(5)}°`;
     targets.live = {
       name, ra, dec, detector: result.detector.replace('-', ' '), nativePixels: result.native_pixels,
-      dataset: result.collection.replace('spherex_', '').toUpperCase(),
+      dataset: [...new Set(result.frames.map((item) => item.collection.replace('spherex_', '').toUpperCase()))].join(' / '),
       note: result.warning,
       observations: result.frames.map((item, index) => ({
         date: `${item.date.replace('T', ' ').slice(0, 16)} UTC`,
