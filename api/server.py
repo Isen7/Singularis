@@ -24,6 +24,12 @@ from astropy.wcs import WCS
 ORIGIN = os.environ.get("SINGULARIS_ORIGIN", "https://isen7.github.io")
 CACHE: dict[str, dict] = {}
 LOCK = threading.Lock()
+BAD_VISUAL_FLAGS = {
+    "TRANSIENT", "OVERFLOW", "SUR_ERROR", "NONFUNC", "DICHROIC",
+    "MISSING_DATA", "HOT", "COLD", "NONLINEAR", "PERSIST",
+    "OUTLIER", "CROSSTALK", "GHOST", "GHOST_FPA", "GHOST_EXT",
+    "STREAK", "BLOOM", "SNOWBALL", "HALO",
+}
 
 
 def fetch(url: str, limit: int = 18_000_000) -> bytes:
@@ -83,8 +89,16 @@ def cutout(item: dict, ra: float, dec: float) -> dict:
         image = np.asarray(hdus["IMAGE"].data, dtype=np.float32)
         zodi = np.asarray(hdus["ZODI"].data, dtype=np.float32)
         residual = image - zodi
-        flags = np.asarray(hdus["FLAGS"].data)
-        residual[flags != 0] = np.nan
+        flags_hdu = hdus["FLAGS"]
+        flags = np.asarray(flags_hdu.data)
+        bad_bits = sum(
+            1 << int(key[4:])
+            for key, name in flags_hdu.header.items()
+            if key.startswith("MSKN") and name in BAD_VISUAL_FLAGS
+        )
+        if bad_bits == 0:
+            raise ValueError("The archive cutout lacks recognizable quality-flag metadata.")
+        residual[(flags & bad_bits) != 0] = np.nan
         wcs = WCS(hdus["IMAGE"].header)
         date = hdus["IMAGE"].header.get("DATE-OBS") or Time(item["time"], format="mjd").isot
         return {"data": residual, "wcs": wcs, "date": str(date), "url": url, "detector": item["detector"], "collection": item["collection"]}
@@ -125,6 +139,8 @@ def search(ra: float, dec: float) -> dict:
     a, b = choose_pair(query(ra, dec))
     first, second = cutout(a, ra, dec), cutout(b, ra, dec)
     aligned = align(second, first)
+    if min(np.isfinite(first["data"]).mean(), np.isfinite(aligned).mean()) < 0.6:
+        raise LookupError("The selected observations have insufficient usable overlap.")
     values = np.concatenate([arr[np.isfinite(arr)] for arr in (first["data"], aligned)])
     if len(values) < 100:
         raise LookupError("The selected pair has too few usable pixels.")
@@ -132,8 +148,8 @@ def search(ra: float, dec: float) -> dict:
     if high <= low:
         raise LookupError("The selected images have no usable display range.")
     result = {"ra": ra, "dec": dec, "native_pixels": [int(first["data"].shape[1]), int(first["data"].shape[0])], "frames": [
-        {"date": first["date"], "image": render(first["data"], low, high), "source": first["url"]},
-        {"date": second["date"], "image": render(aligned, low, high), "source": second["url"]}],
+        {"date": first["date"], "image": render(first["data"], low, high), "source": first["url"], "collection": first["collection"]},
+        {"date": second["date"], "image": render(aligned, low, high), "source": second["url"], "collection": second["collection"]}],
         "detector": first["detector"], "collection": first["collection"],
         "warning": "Preliminary visual comparison only. Wavelength at the target, PSF, and photometric uncertainties require further validation."}
     with LOCK:
