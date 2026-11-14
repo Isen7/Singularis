@@ -111,7 +111,7 @@ def align(second: dict, first: dict) -> np.ndarray:
 def render(data: np.ndarray, low: float, high: float) -> str:
     normalized = np.clip((data - low) / (high - low), 0, 1)
     pixels = np.uint8(255 * np.nan_to_num(np.arcsinh(6 * normalized) / np.arcsinh(6)))
-    image = Image.fromarray(pixels, "L").resize((512, 512), Image.Resampling.NEAREST)
+    image = Image.fromarray(pixels, "L").resize((512, 512), Image.Resampling.BILINEAR)
     output = io.BytesIO()
     image.save(output, format="PNG")
     return "data:image/png;base64," + base64.b64encode(output.getvalue()).decode("ascii")
@@ -131,7 +131,7 @@ def search(ra: float, dec: float) -> dict:
     low, high = np.percentile(values, [2, 99.3])
     if high <= low:
         raise LookupError("The selected images have no usable display range.")
-    result = {"ra": ra, "dec": dec, "frames": [
+    result = {"ra": ra, "dec": dec, "native_pixels": [int(first["data"].shape[1]), int(first["data"].shape[0])], "frames": [
         {"date": first["date"], "image": render(first["data"], low, high), "source": first["url"]},
         {"date": second["date"], "image": render(aligned, low, high), "source": second["url"]}],
         "detector": first["detector"], "collection": first["collection"],
