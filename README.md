@@ -1,4 +1,6 @@
-# SkyBlink SPHEREx
+# Singularis SPHEREx
+
+Beyond Limits, Beyond the Known.
 
 Static website for comparing two observations each of the WISE 0855 and RW Aurigae sky fields.
 
