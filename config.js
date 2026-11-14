@@ -1,0 +1,1 @@
+window.SINGULARIS_API_BASE = '';

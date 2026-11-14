@@ -7,7 +7,8 @@
   <meta name="description" content="Singularis — Beyond Limits, Beyond the Known. Explore the changing sky with real SPHEREx observations.">
   <title>Singularis · SPHEREx Sky Change Viewer</title>
   <link rel="stylesheet" href="./styles.css?v=3">
-  <script src="./app.js" defer></script>
+  <script src="./config.js" defer></script>
+  <script src="./app.js?v=4" defer></script>
 </head>
 <body>
   <header class="topbar">
@@ -29,7 +30,7 @@
         <aside class="panel controls">
           <div class="panel-head"><span class="panel-kicker">SKY POSITION</span><span class="mini-icon" aria-hidden="true">⌖</span></div>
           <h3>Choose a sky field</h3>
-          <p class="helper">Select a prepared field to view two real observations. Coordinates use ICRS decimal degrees.</p>
+          <p class="helper">Choose a prepared field or enter any sky position to search the SPHEREx archive. Coordinates use ICRS decimal degrees.</p>
           <div class="target-choices" role="group" aria-label="Choose a sample sky field"><button id="target-wise" class="target-choice active" type="button" aria-pressed="true">WISE 0855</button><button id="target-rwaur" class="target-choice" type="button" aria-pressed="false">RW Aurigae</button></div>
           <form id="coordinate-form" novalidate>
             <div class="field-grid"><label>Right ascension RA <span>°</span><input id="ra" type="number" min="0" max="360" step="any" required value="133.795129" inputmode="decimal"></label><label>Declination Dec <span>°</span><input id="dec" type="number" min="-90" max="90" step="any" required value="-7.245147" inputmode="decimal"></label></div>
@@ -40,7 +41,7 @@
           <div class="detail-row"><span>Target</span><strong id="target-name">WISE 0855 field</strong></div>
           <div class="detail-row"><span>Field of view</span><strong>6 arcmin</strong></div>
           <div class="detail-row"><span>Detector</span><strong id="detector-name">SPHEREx D2</strong></div>
-          <div class="detail-row"><span>Dataset</span><strong>DR1</strong></div>
+          <div class="detail-row"><span>Dataset</span><strong id="dataset-name">DR1</strong></div>
           <div class="detail-row"><span>Frames</span><strong>2</strong></div>
           <div class="callout"><span aria-hidden="true">ⓘ</span><p>The yellow cross marks the input coordinate; it is not a confirmed detection.</p></div>
         </aside>
@@ -52,8 +53,8 @@
               <img id="frame-image" src="./wise0855-may.png" alt="WISE 0855 sky field observation from 2025-05-06">
             </div>
             <div id="compare-stage" class="image-stage comparison" hidden aria-label="Sliding comparison of two observations">
-              <img id="compare-later-image" src="./images/wise0855-nov.png" alt="" aria-hidden="true">
-              <div id="top-layer" class="top-layer"><img id="compare-earlier-image" src="./images/wise0855-may.png" alt="" aria-hidden="true"></div>
+              <img id="compare-later-image" src="./wise0855-nov.png" alt="" aria-hidden="true">
+              <div id="top-layer" class="top-layer"><img id="compare-earlier-image" src="./wise0855-may.png" alt="" aria-hidden="true"></div>
               <div id="comparison-line" class="comparison-line"><span>↔</span></div>
             </div>
           </div>

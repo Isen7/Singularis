@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: singularis-spx-api-isen7
+    runtime: python
+    plan: free
+    buildCommand: pip install -r api/requirements.txt
+    startCommand: python api/server.py
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.7
+      - key: SINGULARIS_ORIGIN
+        value: https://isen7.github.io

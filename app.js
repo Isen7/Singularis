@@ -17,6 +17,7 @@ const targets = {
   },
 };
 
+const API_BASE = window.SINGULARIS_API_BASE || '';
 const $ = (id) => document.getElementById(id);
 let targetKey = 'wise';
 let frame = 0;
@@ -69,6 +70,7 @@ function selectTarget(key) {
   $('dec').value = target.dec;
   $('target-name').textContent = `${target.name} field`;
   $('detector-name').textContent = target.detector;
+  $('dataset-name').textContent = target.dataset || 'DR1';
   $('stage-title').textContent = `${target.name} · Two observations`;
   $('interpretation-text').textContent = target.note;
   $('compare-earlier-image').src = target.observations[0].image;
@@ -79,7 +81,7 @@ function selectTarget(key) {
   $('compare-later').textContent = target.observations[1].shortDate;
   $('source-earlier').href = target.observations[0].source;
   $('source-later').href = target.observations[1].source;
-  for (const candidate of Object.keys(targets)) {
+  for (const candidate of ['wise', 'rwaur']) {
     const button = $(`target-${candidate}`);
     button.classList.toggle('active', candidate === key);
     button.setAttribute('aria-pressed', String(candidate === key));
@@ -109,7 +111,7 @@ $('compare-slider').addEventListener('input', (event) => {
   $('comparison-line').style.left = `${percent}%`;
 });
 
-$('coordinate-form').addEventListener('submit', (event) => {
+$('coordinate-form').addEventListener('submit', async (event) => {
   event.preventDefault();
   const ra = Number($('ra').value);
   const dec = Number($('dec').value);
@@ -121,10 +123,41 @@ $('coordinate-form').addEventListener('submit', (event) => {
     return;
   }
   const match = Object.keys(targets).find((key) => Math.abs(ra - targets[key].ra) < 0.001 && Math.abs(dec - targets[key].dec) < 0.001);
-  if (match) selectTarget(match);
-  else {
-    status.textContent = 'This prototype currently includes prepared images for WISE 0855 and RW Aurigae only; no display image is available for these coordinates.';
+  if (match) { selectTarget(match); return; }
+  if (!API_BASE) {
+    status.textContent = 'Live archive search is temporarily unavailable. Try one of the prepared fields.';
     status.classList.add('error');
+    return;
+  }
+  const submit = $('coordinate-form').querySelector('button[type="submit"]');
+  submit.disabled = true;
+  status.textContent = 'Searching the SPHEREx archive and preparing two aligned observations. This may take a minute.';
+  try {
+    const response = await fetch(`${API_BASE}/api/search?ra=${encodeURIComponent(ra)}&dec=${encodeURIComponent(dec)}`);
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error || 'Archive search failed.');
+    const name = `${ra.toFixed(5)}°, ${dec.toFixed(5)}°`;
+    targets.live = {
+      name, ra, dec, detector: result.detector.replace('-', ' '),
+      dataset: result.collection.replace('spherex_', '').toUpperCase(),
+      note: result.warning,
+      observations: result.frames.map((item, index) => ({
+        date: `${item.date.replace('T', ' ').slice(0, 16)} UTC`,
+        shortDate: item.date.slice(0, 10),
+        timeline: item.date.slice(0, 7),
+        id: `Archive frame ${index + 1}`,
+        wavelength: 'Not verified',
+        image: item.image,
+        source: item.source,
+      })),
+    };
+    selectTarget('live');
+    status.textContent = 'Loaded two SPHEREx archive observations for these coordinates.';
+  } catch (error) {
+    status.textContent = error.message || 'The archive could not be reached. Try again later.';
+    status.classList.add('error');
+  } finally {
+    submit.disabled = false;
   }
 });
 
