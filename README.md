@@ -12,7 +12,7 @@ This directory is ready for GitHub Pages: `index.html` is at the repository root
 - `index.html`: page structure and text
 - `styles.css`: colors, typography, layout and mobile styles
 - `app.js`: target metadata, interaction and image paths
-- `images/`: four aligned display images
+- `wise0855-may.png`, `wise0855-nov.png`, `rwaur-sep.png`, `rwaur-mar.png`: four aligned display images
 
 The coordinate form currently recognizes two prepared fields. It does not query SPHEREx live for arbitrary coordinates. Visual comparisons are not confirmed detections.
 
