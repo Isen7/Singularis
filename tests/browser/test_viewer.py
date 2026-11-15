@@ -5,7 +5,7 @@ from pathlib import Path
 from threading import Thread
 
 import pytest
-from playwright.sync_api import sync_playwright
+from playwright.sync_api import expect, sync_playwright
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -100,7 +100,7 @@ def test_archive_error_preserves_current_viewer(page, website):
     page.locator("#ra").fill("103.795129")
     page.locator("#dec").fill("-33.245147")
     page.locator("#coordinate-form button").click()
-    assert "Archive temporarily unavailable." in page.locator("#search-status").inner_text()
+    expect(page.locator("#search-status")).to_contain_text("Archive temporarily unavailable.")
     assert "WISE 0855" in page.locator("#stage-title").inner_text()
 
 
