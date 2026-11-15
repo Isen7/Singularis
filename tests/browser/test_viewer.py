@@ -67,6 +67,26 @@ def test_prepared_sample_and_compare(page, website):
     assert page.locator("#comparison-line").evaluate("element => element.style.left") == "75%"
 
 
+def test_motion_demo_direct_link_and_moving_measurement_markers(page, website):
+    page.goto(f"{website}?demo=epsilon-indi-b#viewer")
+    expect(page.locator("#stage-title")).to_contain_text("Epsilon Indi B · 3 observations")
+    expect(page.locator("#motion-evidence")).to_be_visible()
+    expect(page.locator("#motion-quality")).to_contain_text("Supported with limitations")
+    assert "6.49" in page.locator("#motion-observed").inner_text()
+    assert "6.48" in page.locator("#motion-predicted").inner_text()
+    assert page.locator("#motion-sources a").count() == 3
+    assert page.locator("#predicted-marker").is_visible()
+    assert page.locator("#measured-marker").is_visible()
+    initial = page.locator("#measured-marker").evaluate("element => element.style.left")
+    page.locator("#next").click()
+    assert page.locator("#measured-marker").evaluate("element => element.style.left") != initial
+    assert "2025-06-10" in page.locator("#motion-current").inner_text()
+    page.locator("#mode-compare").click()
+    assert not page.locator("#measured-marker").is_visible()
+    page.locator("#mode-play").click()
+    assert page.locator("#measured-marker").is_visible()
+
+
 def test_five_frame_playback_and_difference(page, website):
     search(page, website, 5)
     assert page.locator("#frame-slider").get_attribute("max") == "4"
