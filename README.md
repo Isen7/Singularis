@@ -21,3 +21,7 @@ This directory is ready for GitHub Pages: `index.html` is at the repository root
 Deploy this repository as a free Render web service using `render.yaml`. Once the service is running, set `window.SINGULARIS_API_BASE` in `config.js` to its HTTPS origin, without a trailing slash. GitHub Pages remains the user-facing site. The API queries the official SIA2 endpoint for DR1 and QR3 records, picks two observations from the same detector at nearby catalog wavelengths at least 30 days apart, requests FITS cutouts, aligns the images with WCS, and returns two display images and raw FITS links. The display masks selected bad-pixel flags but keeps the SOURCE flag visible. These are preliminary visual comparisons, not confirmed detections; target-specific wavelength, PSF, and photometric uncertainty need further checks.
 
 Source data: NASA/IPAC IRSA SPHEREx DR1 and QR3. The page links to the original FITS cutouts and contains the required acknowledgement.
+
+## Science audit
+
+The [science audit](SCIENCE_AUDIT.md) checks the four FITS files behind the prepared examples at the stated target coordinates. RW Aurigae's core is flagged `OVERFLOW` in both epochs, and the WISE 0855 fixed coordinate has not been propagated for proper motion and parallax. Neither example supports a confirmed motion or variability claim. The examples demonstrate the search and visual-comparison workflow.
