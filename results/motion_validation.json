@@ -1,0 +1,199 @@
+{
+  "target": "Epsilon Indi B (unresolved Ba/Bb system)",
+  "catalog": {
+    "target": "Epsilon Indi B (unresolved Ba/Bb system)",
+    "source_id": "Gaia DR3 6412596012146801152",
+    "reference_url": "https://gruze.org/10pc/",
+    "reference_epoch_jyear": 2016.0,
+    "ra_deg": 331.076452596564,
+    "dec_deg": -56.7938120668822,
+    "pm_ra_cosdec_mas_yr": 3981.97666296105,
+    "pm_dec_mas_yr": -2466.83181476635,
+    "parallax_mas": 270.658032469453,
+    "pm_ra_error_mas_yr": 0.6016568,
+    "pm_dec_error_mas_yr": 0.6256827,
+    "parallax_error_mas": 0.6895573,
+    "ra_error_mas": 0.5048,
+    "dec_error_mas": 0.4676
+  },
+  "field_ra_deg": 331.0764,
+  "field_dec_deg": -56.7865,
+  "native_pixels": [
+    58,
+    58
+  ],
+  "frames": [
+    {
+      "date": "2025-04-29T16:17:11.776",
+      "wavelength_um": 4.660817164242789,
+      "url": "https://irsa.ipac.caltech.edu/ibe/data/spherex/dr1/level2/2025W18_1B/l2b-v27-2026-196/6/level2_2025W18_1B_0175_1D6_spx_l2b-v27-2026-196.fits?center=331.0764%2C-56.7865&size=0.1",
+      "detector": "SPHEREx-D6",
+      "observation_id": "2025W18_1B_0175_1",
+      "processing_version": "l2b-v27-2026-196",
+      "predicted_ra_deg": 331.09541383993064,
+      "predicted_dec_deg": -56.80016503541035,
+      "finast": 0,
+      "measured": {
+        "x": 26.169283600275225,
+        "y": 18.92392235591953,
+        "x_error_px": 0.017562699975576607,
+        "y_error_px": 0.017081472177307346,
+        "amplitude": 12.531549950447877,
+        "peak_snr": 50.867650250335565,
+        "sigma_x_px": 0.5730404140361502,
+        "sigma_y_px": 0.5608690542034696,
+        "reduced_chi2": 3.5431516240072694,
+        "valid_fraction": 0.9506172839506173,
+        "ra_deg": 331.09559697058324,
+        "dec_deg": -56.80032802500036,
+        "predicted_x": 26.18376698535055,
+        "predicted_y": 19.034301081026033,
+        "predicted_ra_deg": 331.09541383993064,
+        "predicted_dec_deg": -56.80016503541035
+      },
+      "image": "./results/epsilon_indi_b_frame_1.png",
+      "masked_fraction": 0.02586206896551724,
+      "usable_fraction": 0.9997027348394768,
+      "predicted_pixel_aligned": [
+        26.18376698535055,
+        19.034301081026033
+      ],
+      "measured_pixel_aligned": [
+        26.16928359792212,
+        18.923922353859087
+      ],
+      "fit_position_uncertainty_arcsec": 0.15093613823222665,
+      "position_uncertainty_arcsec": 0.5222850924777174
+    },
+    {
+      "date": "2025-06-10T04:33:19.725",
+      "wavelength_um": 4.6611440422027925,
+      "url": "https://irsa.ipac.caltech.edu/ibe/data/spherex/dr1/level2/2025W24_1A/l2b-v27-2026-201/6/level2_2025W24_1A_0245_4D6_spx_l2b-v27-2026-201.fits?center=331.0764%2C-56.7865&size=0.1",
+      "detector": "SPHEREx-D6",
+      "observation_id": "2025W24_1A_0245_4",
+      "processing_version": "l2b-v27-2026-201",
+      "predicted_ra_deg": 331.0956439978296,
+      "predicted_dec_deg": -56.80027954241948,
+      "finast": 0,
+      "measured": {
+        "x": 26.120955928925557,
+        "y": 18.842779141020994,
+        "x_error_px": 0.011862658948732528,
+        "y_error_px": 0.011231849885380412,
+        "amplitude": 11.282837232105862,
+        "peak_snr": 47.61647932231075,
+        "sigma_x_px": 0.624028514008504,
+        "sigma_y_px": 0.5800841558411681,
+        "reduced_chi2": 1.4808091445308968,
+        "valid_fraction": 0.9259259259259259,
+        "ra_deg": 331.09585500855934,
+        "dec_deg": -56.800416460378436,
+        "predicted_x": 26.149818429686686,
+        "predicted_y": 18.9423971299535,
+        "predicted_ra_deg": 331.0956439978296,
+        "predicted_dec_deg": -56.80027954241948
+      },
+      "image": "./results/epsilon_indi_b_frame_2.png",
+      "masked_fraction": 0.04756242568370987,
+      "usable_fraction": 0.9988109393579072,
+      "predicted_pixel_aligned": [
+        26.143951246826514,
+        18.944518267989448
+      ],
+      "measured_pixel_aligned": [
+        26.115089155855184,
+        18.844902578118504
+      ],
+      "fit_position_uncertainty_arcsec": 0.10064544227459409,
+      "position_uncertainty_arcsec": 0.5100289256999534
+    },
+    {
+      "date": "2026-09-28T08:04:44.319",
+      "wavelength_um": 4.66087508830852,
+      "url": "https://irsa.ipac.caltech.edu/ibe/data/spherex/qr3/level2/2026W40_1A/l2b-v27-2026-276/6/level2_2026W40_1A_0070_2D6_spx_l2b-v27-2026-276.fits?center=331.0764%2C-56.7865&size=0.1",
+      "detector": "SPHEREx-D6",
+      "observation_id": "2026W40_1A_0070_2",
+      "processing_version": "l2b-v27-2026-276",
+      "predicted_ra_deg": 331.09807393371284,
+      "predicted_dec_deg": -56.80122367335833,
+      "finast": 0,
+      "measured": {
+        "x": 30.19981009333906,
+        "y": 39.04121972415828,
+        "x_error_px": 0.012237438470535348,
+        "y_error_px": 0.012177780694746341,
+        "amplitude": 12.151741669025077,
+        "peak_snr": 47.98101876811861,
+        "sigma_x_px": 0.5642169706649668,
+        "sigma_y_px": 0.5585734239777412,
+        "reduced_chi2": 1.6674073475327877,
+        "valid_fraction": 0.9753086419753086,
+        "ra_deg": 331.0982297898565,
+        "dec_deg": -56.801408263768636,
+        "predicted_x": 30.20921695214643,
+        "predicted_y": 38.92246487861337,
+        "predicted_ra_deg": 331.09807393371284,
+        "predicted_dec_deg": -56.80122367335833
+      },
+      "image": "./results/epsilon_indi_b_frame_3.png",
+      "masked_fraction": 0.02348394768133175,
+      "usable_fraction": 0.9536266349583828,
+      "predicted_pixel_aligned": [
+        25.660259478336872,
+        18.140065363714008
+      ],
+      "measured_pixel_aligned": [
+        25.658914160198247,
+        18.021272379474837
+      ],
+      "fit_position_uncertainty_arcsec": 0.10636068498211142,
+      "position_uncertainty_arcsec": 0.5111874365727936
+    }
+  ],
+  "background_calibrators": [
+    {
+      "reference_ra_deg": 331.1294863590964,
+      "reference_dec_deg": -56.77486958831866,
+      "matches": [
+        {
+          "date": "2025-06-10T04:33:19.725",
+          "east_arcsec": -0.09232128908711498,
+          "north_arcsec": 0.36202292967492833,
+          "peak_snr": 19.918420776091317
+        },
+        {
+          "date": "2026-09-28T08:04:44.319",
+          "east_arcsec": -0.17918860703551087,
+          "north_arcsec": 0.22757528887429662,
+          "peak_snr": 18.15170942270259
+        }
+      ]
+    }
+  ],
+  "observed_displacement_arcsec": 6.485129018024583,
+  "predicted_displacement_arcsec": 6.482230123963742,
+  "observed_displacement_uncertainty_arcsec": 0.7308175648780767,
+  "motion_significance_sigma": 8.873800151624033,
+  "observed_predicted_vector_difference_arcsec": 0.09455109339604055,
+  "stationary_source_drift_arcsec": 0.28965336006603876,
+  "moment_centroid_displacement_arcsec": 6.441578293780482,
+  "uncertainty_model": "Quadrature of Gaussian-fit covariance and a conservative 0.5 arcsec per-epoch astrometric/registration floor; binary orbital acceleration and PSF modeling are not fully quantified.",
+  "quality_checks": {
+    "independent_epochs": true,
+    "target_wavelength_range_under_0_1_percent": true,
+    "all_finast_good": true,
+    "target_snr_over_20": true,
+    "stationary_source_drift_under_0_5_arcsec": true,
+    "independent_centroid_displacement_within_0_5_arcsec": true,
+    "observed_predicted_vector_difference_within_two_sigma": true
+  },
+  "quality_status": "Supported with limitations",
+  "conclusion": "The unresolved Epsilon Indi B source moves relative to the background in three SPHEREx D6 epochs at matched wavelengths, consistent with catalog proper motion and parallax under the stated uncertainty model.",
+  "limitations": [
+    "Only one bright stationary source was available for a direct local registration check.",
+    "A Gaussian is an approximation to the SPHEREx effective PSF.",
+    "The Ba/Bb binary is unresolved; component motion is not measured separately.",
+    "Geocentric annual parallax approximates the SPHEREx observer; low-Earth-orbit parallax is negligible at this precision."
+  ],
+  "source_documentation": "https://irsa.ipac.caltech.edu/data/SPHEREx/docs/SPHEREx_Expsupp.pdf"
+}
