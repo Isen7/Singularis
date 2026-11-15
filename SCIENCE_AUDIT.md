@@ -21,6 +21,18 @@ The IRSA documentation defines `OVERFLOW` as nearing saturation and explains tha
 
 > Singularis retrieves real SPHEREx observations and makes repeated visits easy to compare visually. The prepared examples demonstrate the workflow. They are not confirmed detections of motion or brightness change; the quality audit identifies saturation in the RW Aurigae pair and a missing epoch-dependent position for WISE 0855.
 
+## Additional field feasibility check (2026-11-15)
+
+These candidate coordinates were checked with the live IRSA SIA2 records and two actual FITS cutouts per field. The names describe nearby test fields; no catalog source association or epoch-propagated target position has been established. SIA2 catalog band values are insufficient on their own: the FITS spectral WCS must be checked at the entered position.
+
+| Candidate field (ICRS degrees) | SIA2 records | Cutouts checked | Target-position wavelengths | Quality and conclusion |
+|---|---:|---|---|---|
+| Barnard's Star field (269.4521, +4.6934) | 363 | 2025-08-15, 2026-09-20; D6 | 4.9155, 4.9997 µm | The entered pixels were unmasked in both sampled frames. This does not identify the star or establish its motion. A separate end-to-end search returned two usable D6 frames dated 2026-03-19 and 2026-08-16; it is a visual workflow check, not a detection. |
+| Epsilon Indi B candidate field (331.0764, −56.7865) | 465 | 2025-04-24, 2026-09-28; D2 | 1.5584, 1.1377 µm | The sampled wavelengths differ by about 27%; the later entered pixel is masked. This pair is unsuitable for direct change analysis. The archive also returned a transient HTTP 503 during the first cutout attempt. |
+| R Draconis field (248.1675, +66.7550) | 545 | 2025-06-06, 2026-07-06; D4 | 3.1691, 3.4183 µm | The sampled wavelengths differ by about 7%; the entered pixel is masked in both frames. This pair is unsuitable for direct change analysis. |
+
+The checked [Barnard's Star first](https://irsa.ipac.caltech.edu/ibe/data/spherex/dr1/level2/2025W33_2C/l2b-v27-2026-228/6/level2_2025W33_2C_0321_1D6_spx_l2b-v27-2026-228.fits?center=269.4521%2C4.6934&size=0.1) and [last](https://irsa.ipac.caltech.edu/ibe/data/spherex/qr3/level2/2026W38_2A/l2b-v27-2026-264/6/level2_2026W38_2A_0562_1D6_spx_l2b-v27-2026-264.fits?center=269.4521%2C4.6934&size=0.1) FITS cutouts and [R Draconis first](https://irsa.ipac.caltech.edu/ibe/data/spherex/dr1/level2/2025W23_2B/l2b-v27-2026-201/4/level2_2025W23_2B_0206_1D4_spx_l2b-v27-2026-201.fits?center=248.1675%2C66.755&size=0.1) and [last](https://irsa.ipac.caltech.edu/ibe/data/spherex/qr3/level2/2026W28_1A/l2b-v27-2026-275/4/level2_2026W28_1A_0104_1D4_spx_l2b-v27-2026-275.fits?center=248.1675%2C66.755&size=0.1) FITS cutouts are directly traceable to IRSA. The API preserves the corresponding source URL for every returned frame. No additional preset was added because these checks do not establish a scientifically interpretable target change.
+
 ## Requirements for a future detection claim
 
 1. Propagate the target's catalog position, proper motion, and parallax to each exposure time, then verify the source is detected at both positions. For a new object, cross-match against known catalogs and obtain follow-up observations.
