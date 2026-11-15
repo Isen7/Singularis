@@ -78,6 +78,26 @@ def test_search_returns_multiple_frames_in_date_order(monkeypatch):
     assert all(frame['usable_fraction'] == pytest.approx(1.0) for frame in result['frames'])
 
 
+def test_search_reselects_after_actual_wavelength_rejects_candidate(monkeypatch):
+    rows = [{'time': time, 'band': 1.0, 'detector': 'D1', 'url': str(time),
+             'collection': 'spherex_dr1'} for time in (100, 145, 190, 235)]
+    monkeypatch.setattr(server, 'query', lambda ra, dec: rows)
+
+    def cutout(item, ra, dec):
+        return {'data': np.full((10, 10), item['time'], dtype=float),
+                'wcs': sky_wcs(), 'date': str(item['time']), 'url': item['url'],
+                'detector': 'D1', 'collection': item['collection'],
+                'wavelength_um': 1.5 if item['time'] == 145 else 1.0,
+                'bandwidth_um': .02, 'masked_fraction': 0.0,
+                'observation_id': str(item['time']), 'processing_version': 'test-v1'}
+
+    monkeypatch.setattr(server, 'cutout', cutout)
+    monkeypatch.setattr(server, 'render', lambda data, low, high, marker: 'image')
+    server.CACHE.clear()
+    result = server.search(42.1, 12.0)
+    assert [item['date'] for item in result['frames']] == ['100', '190', '235']
+
+
 def test_difference_uses_numeric_overlap_and_rejects_sparse_coverage():
     earlier = np.zeros((10, 10))
     later = earlier.copy()

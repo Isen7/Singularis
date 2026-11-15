@@ -6,9 +6,9 @@
   <meta name="theme-color" content="#07111e">
   <meta name="description" content="Singularis — Beyond Limits, Beyond the Known. Explore the changing sky with real SPHEREx observations.">
   <title>Singularis · SPHEREx Sky Change Viewer</title>
-  <link rel="stylesheet" href="./styles.css?v=5">
+  <link rel="stylesheet" href="./styles.css?v=6">
   <script src="./config.js?v=2" defer></script>
-  <script src="./app.js?v=10" defer></script>
+  <script src="./app.js?v=11" defer></script>
 </head>
 <body>
   <header class="topbar">
@@ -25,13 +25,13 @@
     </section>
 
     <section class="viewer-section shell" id="viewer" aria-label="SPHEREx image viewer">
-      <div class="section-heading"><div><div class="eyebrow">01 / OBSERVE</div><h2>Sky change viewer</h2></div><span class="sample-tag">Real data samples · 2 fields</span></div>
+      <div class="section-heading"><div><div class="eyebrow">01 / OBSERVE</div><h2>Sky change viewer</h2></div><span class="sample-tag">Real data samples · 3 fields</span></div>
       <div class="app-grid">
         <aside class="panel controls">
           <div class="panel-head"><span class="panel-kicker">SKY POSITION</span><span class="mini-icon" aria-hidden="true">⌖</span></div>
           <h3>Choose a sky field</h3>
           <p class="helper">Choose a prepared field or enter any sky position to search the SPHEREx archive. Coordinates use ICRS decimal degrees.</p>
-          <div class="target-choices" role="group" aria-label="Choose a sample sky field"><button id="target-wise" class="target-choice active" type="button" aria-pressed="true">WISE 0855</button><button id="target-rwaur" class="target-choice" type="button" aria-pressed="false">RW Aurigae</button></div>
+          <div class="target-choices" role="group" aria-label="Choose a sample sky field"><button id="target-wise" class="target-choice active" type="button" aria-pressed="true">WISE 0855</button><button id="target-rwaur" class="target-choice" type="button" aria-pressed="false">RW Aurigae</button><button id="target-epsilon" class="target-choice" type="button" aria-pressed="false" disabled>Epsilon Indi B</button></div>
           <form id="coordinate-form" novalidate>
             <div class="field-grid"><label>Right ascension RA <span>°</span><input id="ra" type="number" min="0" max="360" step="any" required value="133.795129" inputmode="decimal"></label><label>Declination Dec <span>°</span><input id="dec" type="number" min="-90" max="90" step="any" required value="-7.245147" inputmode="decimal"></label></div>
             <button class="primary-btn" type="submit">View this coordinate <span aria-hidden="true">→</span></button>
@@ -51,6 +51,8 @@
           <div class="stage-wrap">
             <div id="frame-stage" class="image-stage" aria-label="SPHEREx sky field image">
               <img id="frame-image" src="./wise0855-may.png?v=2" alt="WISE 0855 sky field observation from 2025-05-06">
+              <span id="predicted-marker" class="motion-marker predicted-marker" aria-label="Catalog-predicted position" hidden></span>
+              <span id="measured-marker" class="motion-marker measured-marker" aria-label="Measured SPHEREx position" hidden></span>
             </div>
             <div id="compare-stage" class="image-stage comparison" hidden aria-label="Sliding comparison of two observations">
               <img id="compare-later-image" src="./wise0855-nov.png?v=2" alt="" aria-hidden="true">
@@ -72,6 +74,7 @@
         </div>
       </div>
       <div class="interpretation"><div class="interpretation-icon">✧</div><div><h3>What does this image show?</h3><p id="interpretation-text">These real SPHEREx DR1 frames demonstrate time comparison. The fixed marker has not been adjusted for WISE 0855’s large proper motion and parallax, and the target has not been identified in both frames. No target motion or brightness change is established.</p></div></div>
+      <details id="motion-evidence" class="motion-evidence" hidden><summary>Motion Evidence <span id="motion-quality">Measured result</span></summary><div class="motion-body"><p id="motion-target"></p><p id="motion-explanation"></p><div class="motion-legend"><span><i class="legend-predicted"></i>Catalog prediction</span><span><i class="legend-measured"></i>SPHEREx measurement</span></div><div class="motion-grid"><div><span>Observing dates</span><strong id="motion-dates"></strong></div><div><span>Target-position wavelength</span><strong id="motion-wavelength"></strong></div><div><span>Observed displacement</span><strong id="motion-observed"></strong></div><div><span>Catalog prediction</span><strong id="motion-predicted"></strong></div><div><span>Displacement uncertainty</span><strong id="motion-uncertainty"></strong></div><div><span>Motion significance</span><strong id="motion-significance"></strong></div></div><p id="motion-current"></p><p id="motion-limitation"></p><div id="motion-sources" class="motion-sources"></div><a id="motion-share" href="?demo=epsilon-indi-b#viewer">Share this demonstration ↗</a></div></details>
       <details id="sky-map-panel" class="sky-map-panel"><summary>Sky Map <span>Optional context survey</span></summary><div class="sky-map-body"><p>Pan and zoom the background survey to choose a location. The yellow circle approximates the 6 arcminute SPHEREx cutout. The background image comes from CDS, not SPHEREx.</p><div id="sky-map" aria-label="Interactive background sky survey"></div><p id="sky-map-status" role="status" aria-live="polite">Open the map to load the CDS background survey.</p><button id="map-search" class="primary-btn" type="button">Search SPHEREx at map center <span aria-hidden="true">→</span></button><p class="map-credit">Sky map: <a href="https://aladin.cds.unistra.fr/AladinLite/" target="_blank" rel="noopener noreferrer">CDS Aladin Lite</a>. Background survey imagery has separate provenance from the SPHEREx FITS frames above.</p></div></details>
       <div class="analysis-note"><strong>Photometry unavailable</strong><span>These images have not passed a calibrated flux and uncertainty analysis. Display brightness and difference residuals do not establish variability.</span></div>
     </section>

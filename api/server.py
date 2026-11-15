@@ -105,7 +105,7 @@ def choose_frames(rows: list[dict], maximum: int = 5) -> list[dict]:
     return best
 
 
-def cutout(item: dict, ra: float, dec: float) -> dict:
+def cutout(item: dict, ra: float, dec: float, target: tuple[float, float] | None = None) -> dict:
     url = item["url"] + "?" + urllib.parse.urlencode({"center": f"{ra},{dec}", "size": "0.1"})
     with fits.open(io.BytesIO(fetch(url)), memmap=False) as hdus:
         image = np.asarray(hdus["IMAGE"].data, dtype=np.float32)
@@ -126,7 +126,8 @@ def cutout(item: dict, ra: float, dec: float) -> dict:
             raise ValueError("The archive cutout lacks recognizable quality-flag metadata.")
         residual[(flags & bad_bits) != 0] = np.nan
         wcs = WCS(hdus["IMAGE"].header)
-        x, y = map(float, wcs.world_to_pixel_values(ra, dec))
+        target_ra, target_dec = target or (ra, dec)
+        x, y = map(float, wcs.world_to_pixel_values(target_ra, target_dec))
         if not np.isfinite([x, y]).all() or not (0 <= x < image.shape[1] and 0 <= y < image.shape[0]):
             raise ValueError("The requested position is outside the archive cutout.")
         pixel_x = int(np.clip(round(x), 0, image.shape[1] - 1))
@@ -140,7 +141,7 @@ def cutout(item: dict, ra: float, dec: float) -> dict:
                 "detector": item["detector"], "collection": item["collection"],
                 "wavelength_um": float(wavelength.value), "bandwidth_um": float(bandwidth.value),
                 "masked_fraction": float(np.mean((flags & bad_bits) != 0)),
-                "target_masked": target_masked,
+                "target_masked": target_masked, "target_pixel": [x, y],
                 "observation_id": str(hdus["IMAGE"].header.get("OBSID", "Unknown")),
                 "processing_version": processing_version(item["url"])}
 
@@ -154,16 +155,17 @@ def align(frame: dict, reference: dict) -> np.ndarray:
     return data
 
 
-def render(data: np.ndarray, low: float, high: float, marker: tuple[float, float]) -> str:
+def render(data: np.ndarray, low: float, high: float, marker: tuple[float, float] | None) -> str:
     normalized = np.clip((data - low) / (high - low), 0, 1)
     pixels = np.uint8(255 * np.nan_to_num(np.arcsinh(6 * normalized) / np.arcsinh(6)))
     image = Image.fromarray(pixels, "L").resize((512, 512), Image.Resampling.BILINEAR).convert("RGB")
-    x = marker[0] * 512 / data.shape[1]
-    y = marker[1] * 512 / data.shape[0]
-    draw = ImageDraw.Draw(image)
-    for start, end in [((x - 12, y), (x - 4, y)), ((x + 4, y), (x + 12, y)),
-                       ((x, y - 12), (x, y - 4)), ((x, y + 4), (x, y + 12))]:
-        draw.line((start, end), fill=(235, 222, 45), width=2)
+    if marker is not None:
+        x = marker[0] * 512 / data.shape[1]
+        y = marker[1] * 512 / data.shape[0]
+        draw = ImageDraw.Draw(image)
+        for start, end in [((x - 12, y), (x - 4, y)), ((x + 4, y), (x + 12, y)),
+                           ((x, y - 12), (x, y - 4)), ((x, y + 4), (x, y + 12))]:
+            draw.line((start, end), fill=(235, 222, 45), width=2)
     output = io.BytesIO()
     image.save(output, format="PNG")
     return "data:image/png;base64," + base64.b64encode(output.getvalue()).decode("ascii")
@@ -191,25 +193,38 @@ def search(ra: float, dec: float) -> dict:
     with LOCK:
         if key in CACHE:
             return CACHE[key]
-    selected = choose_frames(query(ra, dec))
-    first = None
+    remaining = query(ra, dec)
+    inspected: list[dict] = []
     frames = []
-    for item in selected:
+    # Catalog band centers are detector-wide approximations. Inspect FITS spectral
+    # WCS before deciding which epochs can be compared, then try alternate rows.
+    for _ in range(4):
         try:
-            frame = cutout(item, ra, dec)
-            if np.isfinite(frame["data"]).mean() < 0.6:
+            selected = choose_frames(remaining)
+        except LookupError:
+            break
+        used_urls = {item["url"] for item in selected}
+        remaining = [item for item in remaining if item["url"] not in used_urls]
+        for item in selected:
+            try:
+                candidate = cutout(item, ra, dec)
+                if np.isfinite(candidate["data"]).mean() < 0.6:
+                    continue
+                inspected.append({**item, "band": candidate["wavelength_um"], "frame": candidate})
+            except (LookupError, ValueError, KeyError, OSError):
                 continue
-            if first is None:
-                first = frame
-                frames.append((frame, frame["data"]))
-                continue
-            if abs(frame["wavelength_um"] - first["wavelength_um"]) / max(frame["wavelength_um"], first["wavelength_um"]) > .035:
-                continue
-            aligned = align(frame, first)
-            if np.isfinite(aligned).mean() >= 0.6:
-                frames.append((frame, aligned))
-        except (LookupError, ValueError, KeyError, OSError):
+        try:
+            actual_series = choose_frames(inspected)
+        except LookupError:
             continue
+        first = actual_series[0]["frame"]
+        frames = [(first, first["data"])]
+        for entry in actual_series[1:]:
+            aligned = align(entry["frame"], first)
+            if np.isfinite(aligned).mean() >= 0.6:
+                frames.append((entry["frame"], aligned))
+        if len(frames) >= 2:
+            break
     if len(frames) < 2:
         raise LookupError("The selected observations have insufficient usable overlap.")
     values = np.concatenate([arr[np.isfinite(arr)] for _, arr in frames])
