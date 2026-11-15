@@ -2,7 +2,9 @@
 
 Beyond Limits, Beyond the Known.
 
-Static website for comparing SPHEREx observations. Two prepared examples are included. A small Python API searches the NASA/IPAC IRSA archive for other valid ICRS sky coordinates. Live results can contain two to five usable frames, depending on the archive and quality checks.
+Static website for comparing SPHEREx observations. Two original prepared examples and one measured Epsilon Indi B motion demonstration are included. A small Python API searches the NASA/IPAC IRSA archive for other valid ICRS sky coordinates. Live results can contain two to five usable frames, depending on the archive and quality checks.
+
+The [Epsilon Indi B demonstration](https://isen7.github.io/Singularis/?demo=epsilon-indi-b#viewer) shows three real SPHEREx D6 observations, measured source positions, an independent Gaia-based position prediction, and qualified uncertainty. Its [machine-readable result](results/motion_validation.json) contains exact FITS URLs and validation checks. This is a demonstration of a known object's motion, with a limited local registration check.
 
 ## GitHub Pages deployment
 
@@ -22,10 +24,10 @@ Deploy this repository as a free Render web service using `render.yaml`. Once th
 
 The optional Sky Map loads CDS Aladin Lite only when opened. Its background survey is distinct from SPHEREx. It can update the coordinate fields and start a SPHEREx search. The viewer continues to work if the map service fails. Calibrated photometry is unavailable because the current image quality and uncertainty workflow does not support a defensible flux measurement.
 
-For local checks, install `api/requirements-dev.txt`, run `python -m playwright install chromium`, and then run `python -m pytest -q api/test_server.py tests/browser/test_viewer.py`. Backend tests mock archive responses and cover coordinate checks, VOTable parsing, frame selection, WCS alignment, sparse overlap, bad FITS, and metadata. Browser tests mock the API for two and five frames and cover playback, comparison, errors, the optional map, and a mobile viewport. Real archive verification is separate from these deterministic tests.
+For local checks, install `api/requirements-dev.txt`, run `python -m playwright install chromium`, and then run `python -m pytest -q api/test_server.py api/test_motion.py tests/browser/test_viewer.py`. Backend tests cover coordinate checks, VOTable parsing, frame selection after actual spectral-WCS checks, WCS alignment, astrometric propagation, source fitting, uncertainty calculations, sparse overlap, bad FITS, and metadata. Browser tests cover playback, comparison, the direct motion link and overlays, errors, the optional map, and a mobile viewport. The scientific result also uses the real archive cutouts documented in `SCIENCE_AUDIT.md`.
 
 Source data: NASA/IPAC IRSA SPHEREx DR1 and QR3. The page links to the original FITS cutouts and contains the required acknowledgement.
 
 ## Science audit
 
-The [science audit](SCIENCE_AUDIT.md) checks the four FITS files behind the prepared examples at the stated target coordinates and records preliminary checks of three additional challenge fields. RW Aurigae's core is flagged `OVERFLOW` in both epochs, and the WISE 0855 fixed coordinate has not been propagated for proper motion and parallax. None of these fields supports a confirmed motion or variability claim from the current analysis. The examples demonstrate the search and visual-comparison workflow.
+The [science audit](SCIENCE_AUDIT.md) records the three-frame Epsilon Indi B motion measurement, its uncertainty and limitations, then checks the four FITS files behind the original prepared examples and three preliminary candidate fields. RW Aurigae's core is flagged `OVERFLOW` in both original epochs, and the WISE 0855 fixed coordinate has not been propagated for proper motion and parallax. Those original examples demonstrate the visual-comparison workflow without a motion or variability claim.

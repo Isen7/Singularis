@@ -82,6 +82,19 @@ function showFrame(index) {
   $('frame-slider').value = String(frame);
   $('frame-index').textContent = `${frame + 1} / ${current().observations.length}`;
   $('source-current').href = item.source;
+  const evidence = current().motionEvidence;
+  for (const [id, position] of [['predicted-marker', item.predictedPixel], ['measured-marker', item.measuredPixel]]) {
+    const marker = $(id);
+    marker.hidden = !evidence || !position || comparing || showingDifference;
+    if (!marker.hidden) {
+      marker.style.left = `${100 * (position[0] + 0.5) / current().nativePixels[0]}%`;
+      marker.style.top = `${100 * (position[1] + 0.5) / current().nativePixels[1]}%`;
+    }
+  }
+  if (evidence) {
+    const measured = evidence.frames[frame].measured;
+    $('motion-current').textContent = `Selected ${item.shortDate}: catalog prediction RA ${evidence.frames[frame].predicted_ra_deg.toFixed(6)}°, Dec ${evidence.frames[frame].predicted_dec_deg.toFixed(6)}°; SPHEREx measurement RA ${measured.ra_deg.toFixed(6)}°, Dec ${measured.dec_deg.toFixed(6)}° (position uncertainty ±${evidence.frames[frame].position_uncertainty_arcsec.toFixed(2)}″). Peak signal-to-noise: ${measured.peak_snr.toFixed(1)}.`;
+  }
   if (!comparing && !showingDifference) {
     $('observation-date').textContent = item.date;
     $('wavelength').textContent = item.wavelength;
@@ -113,11 +126,17 @@ function setMode(mode) {
   $('mode-difference').setAttribute('aria-pressed', String(showingDifference));
   $('callout-text').textContent = showingDifference
     ? 'Yellow in the difference image marks invalid overlap. A residual is not a confirmed detection.'
-    : 'The yellow cross marks the input coordinate; it is not a confirmed detection.';
+    : current().motionEvidence
+      ? 'The cyan circle shows the catalog prediction. The red cross shows the position measured from SPHEREx FITS pixels.'
+      : 'The yellow cross marks the input coordinate; it is not a confirmed detection.';
   $('frame-stage').hidden = comparing;
   $('player-controls').hidden = comparing || showingDifference;
   $('compare-stage').hidden = !comparing;
   $('compare-controls').hidden = !comparing;
+  if (comparing || showingDifference) {
+    $('predicted-marker').hidden = true;
+    $('measured-marker').hidden = true;
+  }
   if (comparing || showingDifference) {
     const endpoints = [current().observations[0], current().observations.at(-1)];
     $('observation-date').textContent = endpoints.map((item) => item.shortDate).join(' / ');
@@ -131,6 +150,36 @@ function setMode(mode) {
       $('frame-image').alt = `Preliminary difference between ${endpoints[0].shortDate} and ${endpoints[1].shortDate}`;
     }
   } else showFrame(frame);
+}
+
+function showMotionEvidence(evidence) {
+  const panel = $('motion-evidence');
+  panel.hidden = !evidence;
+  if (!evidence) return;
+  panel.open = true;
+  $('motion-target').textContent = evidence.target;
+  $('motion-quality').textContent = evidence.quality_status;
+  $('motion-explanation').textContent = 'Epsilon Indi B is expected to move across the sky. We measured its unresolved infrared source in three background-aligned SPHEREx images, then compared those positions with an independent Gaia-based prediction that includes proper motion and annual parallax.';
+  $('motion-dates').textContent = `${evidence.frames[0].date.slice(0, 10)} → ${evidence.frames.at(-1).date.slice(0, 10)}`;
+  const wavelengths = evidence.frames.map((item) => item.wavelength_um);
+  $('motion-wavelength').textContent = `${Math.min(...wavelengths).toFixed(4)}–${Math.max(...wavelengths).toFixed(4)} µm`;
+  $('motion-observed').textContent = `${evidence.observed_displacement_arcsec.toFixed(2)}″`;
+  $('motion-predicted').textContent = `${evidence.predicted_displacement_arcsec.toFixed(2)}″`;
+  $('motion-uncertainty').textContent = `±${evidence.observed_displacement_uncertainty_arcsec.toFixed(2)}″`;
+  $('motion-significance').textContent = evidence.quality_status.startsWith('Supported')
+    ? `${evidence.motion_significance_sigma.toFixed(1)}σ (stated model)` : 'Inconclusive';
+  $('motion-limitation').textContent = `${evidence.conclusion} ${evidence.uncertainty_model} Local stationary-source drift: ${evidence.stationary_source_drift_arcsec.toFixed(2)}″. ${evidence.limitations.join(' ')}`;
+  const links = $('motion-sources');
+  links.replaceChildren();
+  evidence.frames.forEach((item, index) => {
+    const link = document.createElement('a');
+    link.href = item.url;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    link.textContent = `Observation ${index + 1} FITS ↗`;
+    links.append(link);
+  });
+  $('motion-share').href = `${window.location.origin}${window.location.pathname}?demo=epsilon-indi-b#viewer`;
 }
 
 function selectTarget(key) {
@@ -157,7 +206,8 @@ function selectTarget(key) {
   $('compare-later').textContent = target.observations[last].shortDate;
   $('source-earlier').href = target.observations[0].source;
   $('source-later').href = target.observations[last].source;
-  for (const candidate of ['wise', 'rwaur']) {
+  showMotionEvidence(target.motionEvidence);
+  for (const candidate of ['wise', 'rwaur', 'epsilon']) {
     const button = $(`target-${candidate}`);
     button.classList.toggle('active', candidate === key);
     button.setAttribute('aria-pressed', String(candidate === key));
@@ -187,6 +237,7 @@ $('mode-compare').addEventListener('click', () => setMode('compare'));
 $('mode-difference').addEventListener('click', () => setMode('difference'));
 $('target-wise').addEventListener('click', () => selectTarget('wise'));
 $('target-rwaur').addEventListener('click', () => selectTarget('rwaur'));
+$('target-epsilon').addEventListener('click', () => selectTarget('epsilon'));
 $('sky-map-panel').addEventListener('toggle', () => {
   if ($('sky-map-panel').open) loadSkyMap();
 });
@@ -266,4 +317,34 @@ document.addEventListener('keydown', (event) => {
   if (event.key === 'ArrowLeft') showFrame(frame - 1);
 });
 
+async function loadMotionDemo() {
+  try {
+    const response = await fetch('./results/motion_validation.json');
+    if (!response.ok) throw new Error('The motion analysis is unavailable.');
+    const evidence = await response.json();
+    if (!Array.isArray(evidence.frames) || evidence.frames.length < 2) throw new Error('The motion analysis has no usable observations.');
+    targets.epsilon = {
+      name: 'Epsilon Indi B', ra: evidence.field_ra_deg, dec: evidence.field_dec_deg,
+      detector: 'SPHEREx D6', dataset: 'DR1 / QR3', nativePixels: evidence.native_pixels,
+      note: evidence.conclusion + ' The image stack is aligned to the fixed background sky. The Ba/Bb binary remains unresolved.',
+      motionEvidence: evidence,
+      observations: evidence.frames.map((item) => ({
+        date: `${item.date.replace('T', ' ').slice(0, 16)} UTC`,
+        shortDate: item.date.slice(0, 10), timeline: item.date.slice(0, 7),
+        id: item.observation_id, collection: item.url.includes('/qr3/') ? 'QR3' : 'DR1',
+        processingVersion: item.processing_version,
+        wavelength: `${item.wavelength_um.toFixed(4)} µm`,
+        maskedFraction: item.masked_fraction, usableFraction: item.usable_fraction,
+        targetMasked: false, image: item.image, source: item.url,
+        predictedPixel: item.predicted_pixel_aligned, measuredPixel: item.measured_pixel_aligned,
+      })),
+    };
+    $('target-epsilon').disabled = false;
+    if (new URLSearchParams(window.location.search).get('demo') === 'epsilon-indi-b') selectTarget('epsilon');
+  } catch (error) {
+    $('target-epsilon').title = error.message;
+  }
+}
+
 selectTarget('wise');
+loadMotionDemo();
